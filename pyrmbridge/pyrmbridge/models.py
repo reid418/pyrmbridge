@@ -1,5 +1,4 @@
 from __future__ import unicode_literals
-
 from django.db import models
 
 
@@ -16,7 +15,3 @@ class BroadlinkDevice(models.Model):
     description = models.TextField()
     model = models.CharField(max_length=30)
     mac = models.CharField(max_length=30)
-
-class CombinedCommand(models.Model):
-    name = models.CharField(max_length=30)
-

@@ -1,9 +1,8 @@
 from rest_framework import viewsets
 from serializers import BroadlinkDeviceSerializer, BroadlinkCommandSerializer
-from models import BroadlinkDevice, BroadlinkCommand
-import broadlink
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from models import BroadlinkDevice, BroadlinkCommand
+from bridge_commands import available_commands
 
 
 class BroadlinkDeviceViewSet(viewsets.ModelViewSet):
@@ -22,15 +21,4 @@ def string_to_broadlink_command(command):
 
 @api_view(['POST'])
 def view(request):
-    target_device = BroadlinkDevice.objects.get(name=request.data.get('target_device_name'))
-    device = broadlink.rm(host=(target_device.ip, target_device.port), mac=str(target_device.mac))
-    print (target_device.ip, target_device.port)
-    print target_device.mac
-    device.auth()
-    if request.data['command'] == u"send_code":
-        print device.send_data(string_to_broadlink_command(request.data['data']))
-    if request.data['command'] == u"send_command":
-        print device.send_data(string_to_broadlink_command(BroadlinkCommand.objects.get(name=request.data['data']).command))
-    else:
-        raise Exception('unknown')
-    return Response({"message": "Hello for today! See you tomorrow!"})
+    return available_commands[unicode(request.data['command'])](request.data)
